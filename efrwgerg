@@ -1,0 +1,148 @@
+using System;
+using System.Collections.Generic;
+
+class Magazinchik
+{
+    static void Main(string[] args)
+    {
+        List<User> users = new List<User>();
+
+        users.Add(new User("admin", "admin", "Администратор"));
+        users.Add(new User("cashier", "cashier", "Кассир"));
+        users.Add(new User("hr", "hr", "Менеджер персонала"));
+        users.Add(new User("warehouse_manager", "warehouse_manager", "Склад-менеджер"));
+        users.Add(new User("accountant", "accountant", "Бухгалтер"));
+
+        User loggedUser = null;
+        do
+        {
+            Console.Clear();
+            Console.WriteLine("Введите логин: ");
+            string username = Console.ReadLine();
+
+            Console.WriteLine("Введите пароль: ");
+            string password = GetHiddenPassword();
+
+            loggedUser = users.Find(user => user.Username == username && user.Password == password);
+
+            if (loggedUser == null)
+            {
+                Console.WriteLine("Неправильный логин или пароль. Попробуйте еще раз");
+                Console.WriteLine("Тыкните любую клавишу для повторного ввода логина и пароля");
+                Console.ReadKey();
+            }
+
+        } while (loggedUser == null);
+
+        Console.Clear();
+        Console.WriteLine($"Вы вошли в систему как: {(loggedUser.EmployeeName != null ? loggedUser.EmployeeName : loggedUser.Username)}");
+        Console.WriteLine("Тыкните любую клавишу для продолжения");
+        Console.ReadKey();
+
+
+        static void CashierFunctionality()
+        {
+            Console.WriteLine("Вы вошли как кассир");
+            Console.WriteLine("Продажа товаров, прием платежей");
+        }
+
+        static void HRManagerFunctionality()
+        {
+            Console.WriteLine("Вы вошли как менеджер персонала");
+            Console.WriteLine("Управление кадровыми вопросами, найм сотрудников");
+        }
+
+        static void WarehouseManagerFunctionality()
+        {
+            Console.WriteLine("Вы вошли как склад-менеджер");
+            Console.WriteLine("Управление запасами, приемка и отгрузка товаров");
+        }
+
+        static void AccountantFunctionality()
+        {
+            Console.WriteLine("Вы вошли как бухгалтер");
+            Console.WriteLine("Учет финансовых операций, составление отчетности");
+        }
+
+
+        switch (loggedUser.UserRole.ToLower())
+        {
+            case "администратор":
+                ShowUsers(users);
+                break;
+            case "кассир":
+                CashierFunctionality();
+                break;
+            case "менеджер персонала":
+                HRManagerFunctionality();
+                break;
+            case "склад-менеджер":
+                WarehouseManagerFunctionality();
+                break;
+            case "бухгалтер":
+                AccountantFunctionality();
+                break;
+            default:
+                Console.WriteLine("Неправильная роль юзера.");
+                break;
+        }
+
+
+        Console.WriteLine("Тыкните любую клавишу для выхода из программы");
+        Console.ReadKey();
+    }
+
+    static string GetHiddenPassword()
+    {
+        string password = "";
+        while (true)
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.Enter)
+                break;
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (password.Length > 0)
+                {
+                    password = password.Remove(password.Length - 1);
+                    Console.Write("\b \b");
+                }
+            }
+            else
+            {
+                password += key.KeyChar;
+                Console.Write("*");
+            }
+        }
+        Console.WriteLine();
+        return password;
+    }
+
+    static void ShowUsers(List<User> users)
+    {
+        Console.Clear();
+        Console.WriteLine("Список наших юзерчиков: ");
+        foreach (User user in users)
+        {
+            Console.WriteLine($"- Логин: {user.Username}, Роль: {user.UserRole}");
+        }
+
+        Console.WriteLine("Тыкните любую клавишу для продолжения");
+        Console.ReadKey();
+    }
+
+    class User
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string EmployeeName { get; set; }
+        public string UserRole { get; set; }
+
+        public User(string username, string password, string userRole)
+        {
+            Username = username;
+            Password = password;
+            UserRole = userRole;
+        }
+    }
+}
